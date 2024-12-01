@@ -22,16 +22,21 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import android.app.Activity
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.navigation.NavController
 import com.example.pr04_hangman_app_jaumegandara_joanlinares.Model.Menu
+import com.example.pr04_hangman_app_jaumegandara_joanlinares.R
+import com.example.pr04_hangman_app_jaumegandara_joanlinares.Routes
 
 @Composable
 fun MenuScreen(navController: NavController) {
     val context = LocalContext.current
-    var difficulty by remember { mutableStateOf(Menu().difficulty) }
+    var difficulty by remember { mutableStateOf("Medium") }
     var isDropdownExpanded by remember { mutableStateOf(false) }
 
     Column(
@@ -39,6 +44,14 @@ fun MenuScreen(navController: NavController) {
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
+        Image(
+            painter = painterResource(id = R.drawable.hangman),
+            contentDescription = "Hangman",
+            modifier = Modifier
+                .width(400.dp)
+                .height(400.dp)
+        )
+
         Column{
             Button(
                 modifier = Modifier.padding(16.dp).width(350.dp).height(75.dp),
@@ -57,15 +70,39 @@ fun MenuScreen(navController: NavController) {
                 modifier = Modifier.fillMaxWidth()
             ) {
                 DropdownMenuItem(
-                    text = { Text("Easy") },
+                    text = {
+                        Text(
+                            "Easy",
+                            fontSize = 24.sp,
+                            fontWeight = FontWeight.Bold,
+                            modifier = Modifier.fillMaxWidth(),
+                            textAlign = TextAlign.Center
+                        )
+                },
                     onClick = { difficulty = "Easy"; isDropdownExpanded = false }
                 )
                 DropdownMenuItem(
-                    text = { Text("Medium") },
+                    text = {
+                        Text(
+                            "Medium",
+                            fontSize = 24.sp,
+                            fontWeight = FontWeight.Bold,
+                            modifier = Modifier.fillMaxWidth(),
+                            textAlign = TextAlign.Center
+                        )
+                    },
                     onClick = { difficulty = "Medium"; isDropdownExpanded = false }
                 )
                 DropdownMenuItem(
-                    text = { Text("Hard") },
+                    text = {
+                        Text(
+                            "Hard",
+                            fontSize = 24.sp,
+                            fontWeight = FontWeight.Bold,
+                            modifier = Modifier.fillMaxWidth(),
+                            textAlign = TextAlign.Center
+                        )
+                    },
                     onClick = { difficulty = "Hard"; isDropdownExpanded = false }
                 )
             }
@@ -73,7 +110,7 @@ fun MenuScreen(navController: NavController) {
 
         Button(
             modifier = Modifier.padding(16.dp).width(350.dp).height(75.dp),
-            onClick = { navController.navigate("screen2") }
+            onClick = { navController.navigate(Routes.Screen2.createRoute(difficulty)) }
         ) {
             Text(
                 "Start Game",
