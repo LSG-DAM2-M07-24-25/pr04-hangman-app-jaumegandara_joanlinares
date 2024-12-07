@@ -15,12 +15,11 @@ class Words {
     )
 
     fun getRandomWords (difficulty: String): String {
-        return when (difficulty.lowercase()) {
+        return when (difficulty) {
             "Easy" -> easyWords.random()
             "Medium" -> mediumWords.random()
             "Hard" -> hardWords.random()
             else -> throw IllegalArgumentException("Invalid difficulty")
-
         }
     }
 }

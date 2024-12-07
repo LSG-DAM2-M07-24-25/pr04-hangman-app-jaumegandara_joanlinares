@@ -1,6 +1,5 @@
 package com.example.pr04_hangman_app_jaumegandara_joanlinares
 
-import com.example.pr04_hangman_app_jaumegandara_joanlinares.Model.Menu
 
 sealed class Routes(val route: String) {
     object Screen1 : Routes("screen1")
