@@ -16,9 +16,9 @@ class Words {
 
     fun getRandomWords (difficulty: String): String {
         return when (difficulty.lowercase()) {
-            "easy" -> easyWords.random()
-            "medium" -> mediumWords.random()
-            "hard" -> hardWords.random()
+            "Easy" -> easyWords.random()
+            "Medium" -> mediumWords.random()
+            "Hard" -> hardWords.random()
             else -> throw IllegalArgumentException("Invalid difficulty")
 
         }
