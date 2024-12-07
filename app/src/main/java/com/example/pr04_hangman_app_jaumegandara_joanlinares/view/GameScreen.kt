@@ -58,7 +58,8 @@ fun GameScreen(navController: NavController, gameViewModel: GameViewModel = view
                 items(group) { letter ->
                     Button(
                         modifier = Modifier
-                            .padding(4.dp).height(60.dp),
+                            .padding(4.dp)
+                            .size(60.dp), // Amplada i alçada fixa per al botó
                         onClick = { gameViewModel.onLetterClicked(letter) },
                         enabled = !guessedLetters.contains(letter),
                         shape = MaterialTheme.shapes.small,
@@ -70,9 +71,11 @@ fun GameScreen(navController: NavController, gameViewModel: GameViewModel = view
                     ) {
                         Text(
                             text = letter.toString(),
-                            fontSize = 18.sp,
+                            fontSize = 18.sp, // Mida de la lletra
                             fontWeight = FontWeight.Bold,
-                            color = Color.Black
+                            color = Color.Black,
+                            modifier = Modifier.wrapContentSize(Alignment.Center), // Centra el text horitzontal i verticalment
+                            textAlign = androidx.compose.ui.text.style.TextAlign.Center // Centra el text horitzontalment
                         )
                     }
                 }
