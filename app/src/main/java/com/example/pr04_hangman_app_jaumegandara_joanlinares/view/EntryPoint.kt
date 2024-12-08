@@ -1,13 +1,15 @@
 package com.example.pr04_hangman_app_jaumegandara_joanlinares.view
 
+import android.app.GameState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
-import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import androidx.navigation.navArgument
 import com.example.pr04_hangman_app_jaumegandara_joanlinares.Routes
+import com.example.pr04_hangman_app_jaumegandara_joanlinares.viewModel.GameViewModel
+import com.google.android.libraries.mapsplatform.transportation.consumer.model.Route
 
 @Composable
 fun EntryPoint(navigationController: NavController) {
@@ -17,8 +19,16 @@ fun EntryPoint(navigationController: NavController) {
     ) {
         composable(Routes.Screen1.route) { MenuScreen(navigationController) }
 
-        composable(Routes.Screen2.route) { GameScreen(navigationController) }
+        composable(Routes.Screen2.route) { backStackEntry ->
+            val difficulty = backStackEntry.arguments?.getString("difficulty") ?: "Medium"
+            val gameViewModel = remember { GameViewModel(difficulty) }
+            GameScreen(navigationController, gameViewModel)
+        }
 
-        composable(Routes.Screen3.route) { ResultScreen(navigationController) }
+        composable(Routes.Screen3.route) { backStackEntry ->
+            val isGameWon = backStackEntry.arguments?.getString("isGameWon")?.toBoolean() ?: false
+            val attempts = backStackEntry.arguments?.getString("attempts")?.toInt() ?: 0
+            ResultScreen(navigationController, isGameWon, attempts)
+        }
     }
 }

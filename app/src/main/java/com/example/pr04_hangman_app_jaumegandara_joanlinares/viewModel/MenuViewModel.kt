@@ -18,7 +18,7 @@ class MenuViewModel : ViewModel() {
 
     private fun startLoading() {
         viewModelScope.launch {
-            delay(4000)
+            delay(2000)
             _isLoading.value = false
         }
     }

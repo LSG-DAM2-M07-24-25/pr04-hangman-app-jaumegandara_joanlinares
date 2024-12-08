@@ -1,4 +1,4 @@
-package com.example.pr04_hangman_app_jaumegandara_joanlinares.Model
+package com.example.pr04_hangman_app_jaumegandara_joanlinares.model
 
 class Words {
     private val easyWords = listOf(
@@ -15,12 +15,11 @@ class Words {
     )
 
     fun getRandomWords (difficulty: String): String {
-        return when (difficulty.lowercase()) {
+        return when (difficulty) {
             "Easy" -> easyWords.random()
             "Medium" -> mediumWords.random()
             "Hard" -> hardWords.random()
             else -> throw IllegalArgumentException("Invalid difficulty")
-
         }
     }
 }
