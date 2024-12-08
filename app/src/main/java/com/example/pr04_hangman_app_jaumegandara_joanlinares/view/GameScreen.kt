@@ -22,11 +22,12 @@ import com.example.pr04_hangman_app_jaumegandara_joanlinares.viewModel.GameViewM
 
 @Composable
 fun GameScreen(navController: NavController, gameViewModel: GameViewModel = viewModel()) {
-    val difficulty = navController.currentBackStackEntry?.arguments?.getString("difficulty") ?: "Easy"
     val remainingAttempts by gameViewModel.remainingAttempts
     val guessedLetters by gameViewModel.guessedLetters
+    val usedLetters by gameViewModel.usedLetters
     val selectedWord = gameViewModel.selectedWord
-    val wordDisplay = selectedWord.map { if (it in guessedLetters) it else '_' }.joinToString(" ")
+    val wordDisplay = buildWordDisplay(selectedWord, guessedLetters)
+
     val alphabet = ('A'..'Z').toList()
     val letterGroups = alphabet.chunked(6)
 
@@ -35,6 +36,7 @@ fun GameScreen(navController: NavController, gameViewModel: GameViewModel = view
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
+        // Imagen del ahorcado
         Image(
             painter = painterResource(id = GallowImage(remainingAttempts)),
             contentDescription = "Hangman",
@@ -43,6 +45,7 @@ fun GameScreen(navController: NavController, gameViewModel: GameViewModel = view
                 .height(350.dp)
         )
 
+        // Mostrar palabra con guiones bajos o letras reveladas
         Text(
             text = wordDisplay,
             fontSize = 24.sp,
@@ -50,6 +53,7 @@ fun GameScreen(navController: NavController, gameViewModel: GameViewModel = view
             modifier = Modifier.padding(32.dp)
         )
 
+        // Botones de letras
         letterGroups.forEach { group ->
             LazyRow(
                 modifier = Modifier.fillMaxWidth(),
@@ -59,31 +63,32 @@ fun GameScreen(navController: NavController, gameViewModel: GameViewModel = view
                     Button(
                         modifier = Modifier
                             .padding(4.dp)
-                            .size(60.dp), // Amplada i alçada fixa per al botó
+                            .size(60.dp),
                         onClick = { gameViewModel.onLetterClicked(letter) },
-                        enabled = !guessedLetters.contains(letter),
+                        enabled = !gameViewModel.isLetterUsed(letter),
                         shape = MaterialTheme.shapes.small,
                         colors = ButtonDefaults.buttonColors(
-                            containerColor = Color.Transparent,
+                            containerColor = if (gameViewModel.isLetterUsed(letter)) Color.Gray else Color.Transparent,
                             contentColor = Color.Black
                         ),
                         border = BorderStroke(1.dp, Color.Black)
                     ) {
                         Text(
                             text = letter.toString(),
-                            fontSize = 18.sp, // Mida de la lletra
+                            fontSize = 18.sp,
                             fontWeight = FontWeight.Bold,
                             color = Color.Black,
-                            modifier = Modifier.wrapContentSize(Alignment.Center), // Centra el text horitzontal i verticalment
-                            textAlign = androidx.compose.ui.text.style.TextAlign.Center // Centra el text horitzontalment
+                            modifier = Modifier.wrapContentSize(Alignment.Center),
+                            textAlign = androidx.compose.ui.text.style.TextAlign.Center
                         )
                     }
                 }
             }
         }
 
+        // Texto de intentos restantes
         Text(
-            text = "Intents restants: $remainingAttempts",
+            text = "Intentos restantes: $remainingAttempts",
             fontSize = 18.sp,
             modifier = Modifier.padding(top = 32.dp)
         )
@@ -101,4 +106,10 @@ fun GallowImage(remainingAttempts: Int): Int {
         5 -> R.drawable.gallows1
         else -> R.drawable.gallows0
     }
+}
+
+fun buildWordDisplay(selectedWord: String, guessedLetters: Set<Char>): String {
+    return selectedWord.map { char ->
+        if (guessedLetters.contains(char)) char else '_'
+    }.joinToString(" ")
 }

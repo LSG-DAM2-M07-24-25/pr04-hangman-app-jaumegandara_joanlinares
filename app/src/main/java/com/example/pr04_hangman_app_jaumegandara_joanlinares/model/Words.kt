@@ -1,4 +1,4 @@
-package com.example.pr04_hangman_app_jaumegandara_joanlinares.Model
+package com.example.pr04_hangman_app_jaumegandara_joanlinares.model
 
 class Words {
     private val easyWords = listOf(
