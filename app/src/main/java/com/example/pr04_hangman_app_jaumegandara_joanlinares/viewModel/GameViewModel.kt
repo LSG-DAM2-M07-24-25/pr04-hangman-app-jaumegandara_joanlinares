@@ -5,29 +5,48 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import com.example.pr04_hangman_app_jaumegandara_joanlinares.model.Words
+import com.example.pr04_hangman_app_jaumegandara_joanlinares.model.Game
 
 
 class GameViewModel(difficulty: String) : ViewModel() {
-    val selectedWord = Words().getRandomWords(difficulty).uppercase()
-    val remainingAttempts = mutableIntStateOf(6)
-    @SuppressLint("MutableCollectionMutableState")
-    val guessedLetters = mutableStateOf(setOf<Char>())
-    @SuppressLint("MutableCollectionMutableState")
-    val usedLetters = mutableStateOf(setOf<Char>())
+    private val maxAttempts = 6
+    val gameState = mutableStateOf(
+        Game(
+            selectedWord = Words().getRandomWords(difficulty).uppercase(),
+            remainingAttempts = 0
+        )
+    )
+
+    var navigateToResult = mutableStateOf<Pair<Boolean, Int>?>(null)
+        private set
 
     fun onLetterClicked(letter: Char) {
-        if (letter in usedLetters.value) return // Evita clics repetidos
+        val currentGame = gameState.value
+        if (currentGame.isGameOver || currentGame.guessedLetters.contains(letter)) return
 
-        usedLetters.value += letter // Marca la letra como usada
+        val updatedGuessedLetters = currentGame.guessedLetters.toMutableList()
+        val updatedAttempts = currentGame.remainingAttempts + if (letter in currentGame.selectedWord) 0 else 1
 
-        if (letter in selectedWord) {
-            guessedLetters.value += letter // Añade la letra acertada
-        } else {
-            remainingAttempts.value -= 1 // Reduce intentos si la letra no está
+        updatedGuessedLetters.add(letter)
+
+        val isGameWon = currentGame.selectedWord.all { it in updatedGuessedLetters }
+        val isGameOver = isGameWon || updatedAttempts >= maxAttempts
+
+        gameState.value = currentGame.copy(
+            guessedLetters = updatedGuessedLetters,
+            remainingAttempts = updatedAttempts,
+            isGameWon = isGameWon,
+            isGameOver = isGameOver
+        )
+
+        // Emit a navigation event when the game ends
+        if (isGameOver) {
+            val attemptsUsed = updatedAttempts
+            navigateToResult.value = Pair(isGameWon, attemptsUsed)
         }
     }
 
-    fun isLetterUsed(letter: Char): Boolean {
-        return usedLetters.value.contains(letter) // Comprueba si ya se usó la letra
+    fun resetNavigation() {
+        navigateToResult.value = null
     }
 }

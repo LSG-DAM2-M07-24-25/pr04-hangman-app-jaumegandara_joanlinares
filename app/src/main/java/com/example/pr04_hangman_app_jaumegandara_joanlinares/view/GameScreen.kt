@@ -18,15 +18,21 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.pr04_hangman_app_jaumegandara_joanlinares.R
+import com.example.pr04_hangman_app_jaumegandara_joanlinares.Routes
 import com.example.pr04_hangman_app_jaumegandara_joanlinares.viewModel.GameViewModel
 
 @Composable
 fun GameScreen(navController: NavController, gameViewModel: GameViewModel = viewModel()) {
-    val remainingAttempts by gameViewModel.remainingAttempts
-    val guessedLetters by gameViewModel.guessedLetters
-    val usedLetters by gameViewModel.usedLetters
-    val selectedWord = gameViewModel.selectedWord
-    val wordDisplay = buildWordDisplay(selectedWord, guessedLetters)
+    val game by gameViewModel.gameState
+
+    // Observa el evento de navegación
+    val navigateToResult by gameViewModel.navigateToResult
+
+    // Navega a la pantalla de resultado si el evento se activa
+    navigateToResult?.let { (isGameWon, attempts) ->
+        navController.navigate(Routes.Screen3.createRoute(isGameWon, attempts))
+        gameViewModel.resetNavigation()
+    }
 
     val alphabet = ('A'..'Z').toList()
     val letterGroups = alphabet.chunked(6)
@@ -36,24 +42,21 @@ fun GameScreen(navController: NavController, gameViewModel: GameViewModel = view
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        // Imagen del ahorcado
         Image(
-            painter = painterResource(id = GallowImage(remainingAttempts)),
+            painter = painterResource(id = gallowImage(game.remainingAttempts)),
             contentDescription = "Hangman",
             modifier = Modifier
                 .width(350.dp)
                 .height(350.dp)
         )
 
-        // Mostrar palabra con guiones bajos o letras reveladas
         Text(
-            text = wordDisplay,
+            text = buildWordDisplay(game.selectedWord, game.guessedLetters),
             fontSize = 24.sp,
             fontWeight = FontWeight.Bold,
             modifier = Modifier.padding(32.dp)
         )
 
-        // Botones de letras
         letterGroups.forEach { group ->
             LazyRow(
                 modifier = Modifier.fillMaxWidth(),
@@ -65,10 +68,10 @@ fun GameScreen(navController: NavController, gameViewModel: GameViewModel = view
                             .padding(4.dp)
                             .size(60.dp),
                         onClick = { gameViewModel.onLetterClicked(letter) },
-                        enabled = !gameViewModel.isLetterUsed(letter),
+                        enabled = !game.guessedLetters.contains(letter),
                         shape = MaterialTheme.shapes.small,
                         colors = ButtonDefaults.buttonColors(
-                            containerColor = if (gameViewModel.isLetterUsed(letter)) Color.Gray else Color.Transparent,
+                            containerColor = if (game.guessedLetters.contains(letter)) Color.Gray else Color.Transparent,
                             contentColor = Color.Black
                         ),
                         border = BorderStroke(1.dp, Color.Black)
@@ -86,9 +89,8 @@ fun GameScreen(navController: NavController, gameViewModel: GameViewModel = view
             }
         }
 
-        // Texto de intentos restantes
         Text(
-            text = "Intentos restantes: $remainingAttempts",
+            text = "Intentos fallidos: ${game.remainingAttempts}",
             fontSize = 18.sp,
             modifier = Modifier.padding(top = 32.dp)
         )
@@ -96,19 +98,20 @@ fun GameScreen(navController: NavController, gameViewModel: GameViewModel = view
 }
 
 @Composable
-fun GallowImage(remainingAttempts: Int): Int {
+fun gallowImage(remainingAttempts: Int): Int {
     return when (remainingAttempts) {
-        0 -> R.drawable.gallows6
-        1 -> R.drawable.gallows5
-        2 -> R.drawable.gallows4
+        0 -> R.drawable.gallows0
+        1 -> R.drawable.gallows1
+        2 -> R.drawable.gallows2
         3 -> R.drawable.gallows3
-        4 -> R.drawable.gallows2
-        5 -> R.drawable.gallows1
+        4 -> R.drawable.gallows4
+        5 -> R.drawable.gallows5
+        6 -> R.drawable.gallows6
         else -> R.drawable.gallows0
     }
 }
 
-fun buildWordDisplay(selectedWord: String, guessedLetters: Set<Char>): String {
+fun buildWordDisplay(selectedWord: String, guessedLetters: MutableList<Char>): String {
     return selectedWord.map { char ->
         if (guessedLetters.contains(char)) char else '_'
     }.joinToString(" ")

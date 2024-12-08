@@ -1,5 +1,6 @@
 package com.example.pr04_hangman_app_jaumegandara_joanlinares.view
 
+import android.app.GameState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.navigation.NavController
@@ -24,6 +25,10 @@ fun EntryPoint(navigationController: NavController) {
             GameScreen(navigationController, gameViewModel)
         }
 
-        composable(Routes.Screen3.route) { ResultScreen(navigationController) }
+        composable(Routes.Screen3.route) { backStackEntry ->
+            val isGameWon = backStackEntry.arguments?.getString("isGameWon")?.toBoolean() ?: false
+            val attempts = backStackEntry.arguments?.getString("attempts")?.toInt() ?: 0
+            ResultScreen(navigationController, isGameWon, attempts)
+        }
     }
 }
