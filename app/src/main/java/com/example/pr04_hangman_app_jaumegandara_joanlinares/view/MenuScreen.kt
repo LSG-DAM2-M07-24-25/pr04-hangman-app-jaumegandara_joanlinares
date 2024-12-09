@@ -16,6 +16,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.Dialog
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.pr04_hangman_app_jaumegandara_joanlinares.R
@@ -27,6 +28,7 @@ import com.example.pr04_hangman_app_jaumegandara_joanlinares.viewModel.MenuViewM
 fun MenuScreen(navController: NavController, viewModel: MenuViewModel = viewModel()) {
     val isLoading by viewModel.isLoading
     val context = LocalContext.current
+    var showInstructionsDialog by remember { mutableStateOf(false) }
 
     if (isLoading) {
         Column(
@@ -44,6 +46,10 @@ fun MenuScreen(navController: NavController, viewModel: MenuViewModel = viewMode
             CircularProgressIndicator(modifier = Modifier.padding(top = 16.dp))
         }
     } else {
+        InstructionsDialog(
+            showDialog = showInstructionsDialog,
+            onDismiss = { showInstructionsDialog = false }
+        )
         Column(
             modifier = Modifier.fillMaxSize(),
             verticalArrangement = Arrangement.Center,
@@ -103,6 +109,17 @@ fun MenuScreen(navController: NavController, viewModel: MenuViewModel = viewMode
 
             Button(
                 modifier = Modifier.padding(16.dp).width(350.dp).height(75.dp),
+                onClick = { showInstructionsDialog = true }
+            ) {
+                Text(
+                    "Help",
+                    fontSize = 24.sp,
+                    fontWeight = FontWeight.Bold
+                )
+            }
+
+            Button(
+                modifier = Modifier.padding(16.dp).width(350.dp).height(75.dp),
                 onClick = { (context as? Activity)?.finishAffinity() }
             ) {
                 Text(
@@ -115,3 +132,47 @@ fun MenuScreen(navController: NavController, viewModel: MenuViewModel = viewMode
     }
 }
 
+@Composable
+fun InstructionsDialog(
+    showDialog: Boolean,
+    onDismiss: () -> Unit
+) {
+    if (showDialog) {
+        Dialog(onDismissRequest = { onDismiss() }) {
+            Surface(
+                shape = MaterialTheme.shapes.medium,
+                color = MaterialTheme.colorScheme.background,
+                tonalElevation = 8.dp
+            ) {
+                Column(
+                    modifier = Modifier
+                        .padding(16.dp)
+                        .wrapContentSize()
+                ) {
+                    Text(
+                        text = "Help",
+                        style = MaterialTheme.typography.headlineSmall,
+                        modifier = Modifier.padding(bottom = 8.dp)
+                    )
+
+                    Text(
+                        text = "1. Select letters to guess the word.\n" +
+                                "2. You have 6 attempts to guess the correct word.\n" +
+                                "3. If you fail to guess before running out of attempts, you lose the game.",
+                        style = MaterialTheme.typography.bodyLarge,
+                        modifier = Modifier.padding(bottom = 16.dp)
+                    )
+
+                    Row(
+                        horizontalArrangement = Arrangement.End,
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        TextButton(onClick = { onDismiss() }) {
+                            Text("Close")
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
