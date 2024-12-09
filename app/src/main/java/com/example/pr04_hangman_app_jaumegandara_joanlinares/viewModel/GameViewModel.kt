@@ -10,14 +10,16 @@ import com.example.pr04_hangman_app_jaumegandara_joanlinares.model.Game
 
 class GameViewModel(difficulty: String) : ViewModel() {
     private val maxAttempts = 6
+    val difficulty = difficulty
     val gameState = mutableStateOf(
         Game(
             selectedWord = Words().getRandomWords(difficulty).uppercase(),
-            remainingAttempts = 0
+            remainingAttempts = 0,
+            difficulty = difficulty
         )
     )
 
-    var navigateToResult = mutableStateOf<Pair<Boolean, Int>?>(null)
+    var navigateToResult = mutableStateOf<Triple<Boolean, Int, String>?>(null)
         private set
 
     fun onLetterClicked(letter: Char) {
@@ -42,7 +44,7 @@ class GameViewModel(difficulty: String) : ViewModel() {
         // Emit a navigation event when the game ends
         if (isGameOver) {
             val attemptsUsed = updatedAttempts
-            navigateToResult.value = Pair(isGameWon, attemptsUsed)
+            navigateToResult.value = Triple(isGameWon, attemptsUsed, difficulty)
         }
     }
 

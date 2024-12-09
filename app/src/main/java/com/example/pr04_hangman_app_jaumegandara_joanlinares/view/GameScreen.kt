@@ -30,7 +30,7 @@ fun GameScreen(navController: NavController, gameViewModel: GameViewModel = view
 
     // Navega a la pantalla de resultado si el evento se activa
     navigateToResult?.let { (isGameWon, attempts) ->
-        navController.navigate(Routes.Screen3.createRoute(isGameWon, attempts))
+        navController.navigate(Routes.Screen3.createRoute(isGameWon, attempts, gameViewModel.difficulty))
         gameViewModel.resetNavigation()
     }
 
@@ -71,7 +71,12 @@ fun GameScreen(navController: NavController, gameViewModel: GameViewModel = view
                         enabled = !game.guessedLetters.contains(letter),
                         shape = MaterialTheme.shapes.small,
                         colors = ButtonDefaults.buttonColors(
-                            containerColor = if (game.guessedLetters.contains(letter)) Color.Gray else Color.Transparent,
+                            containerColor = if (game.guessedLetters.contains(letter)) {
+                                if (game.selectedWord.contains(letter)) Color.Green else Color.Red
+                            } else Color.Transparent,
+                            disabledContainerColor = if (game.guessedLetters.contains(letter)) {
+                                if (game.selectedWord.contains(letter)) Color.Green else Color.Red
+                            } else Color.Transparent,
                             contentColor = Color.Black
                         ),
                         border = BorderStroke(1.dp, Color.Black)
@@ -90,7 +95,7 @@ fun GameScreen(navController: NavController, gameViewModel: GameViewModel = view
         }
 
         Text(
-            text = "Intentos fallidos: ${game.remainingAttempts}",
+            text = "Failed attempts: ${game.remainingAttempts}",
             fontSize = 18.sp,
             modifier = Modifier.padding(top = 32.dp)
         )

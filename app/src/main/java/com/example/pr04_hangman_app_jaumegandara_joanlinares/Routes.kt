@@ -8,7 +8,7 @@ sealed class Routes(val route: String) {
         fun createRoute(difficulty: String) = "screen2/$difficulty"
     }
 
-    object Screen3 : Routes("screen3/{isGameWon}/{attempts}") {
-        fun createRoute(isGameWon: Boolean, attempts: Int) = "screen3/$isGameWon/$attempts"
+    object Screen3 : Routes("screen3/{isGameWon}/{attempts}/{difficulty}") {
+        fun createRoute(isGameWon: Boolean, attempts: Int, difficulty: String) = "screen3/$isGameWon/$attempts/$difficulty"
     }
 }
