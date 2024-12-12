@@ -132,6 +132,7 @@ fun MenuScreen(navController: NavController, viewModel: MenuViewModel = viewMode
     }
 }
 
+
 @Composable
 fun InstructionsDialog(
     showDialog: Boolean,

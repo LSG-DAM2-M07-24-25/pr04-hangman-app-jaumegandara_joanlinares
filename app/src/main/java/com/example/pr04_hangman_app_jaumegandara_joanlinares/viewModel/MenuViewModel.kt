@@ -9,17 +9,24 @@ import androidx.compose.runtime.State
 
 class MenuViewModel : ViewModel() {
 
-    private val _isLoading = mutableStateOf(true)
+    companion object {
+        var hasLoadedInitially = false
+    }
+
+    private val _isLoading = mutableStateOf(!hasLoadedInitially)
     val isLoading: State<Boolean> = _isLoading
 
     init {
-        startLoading()
+        if (!hasLoadedInitially) {
+            startLoading()
+        }
     }
 
     private fun startLoading() {
         viewModelScope.launch {
             delay(2000)
             _isLoading.value = false
+            hasLoadedInitially = true
         }
     }
 }
